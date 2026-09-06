@@ -5,8 +5,17 @@ import sys
 def convert_asset_to_derp(input_file, output_file, start_region_id=900):
     try:
         with open(input_file, 'r', encoding='utf-8') as f:
-            assets = json.load(f)
-    except Exception as e:
+            content = f.read().strip()
+        if not content:
+            assets = []
+        else:
+            try:
+                assets = json.loads(content)
+                if isinstance(assets, dict):
+                    assets = [assets]
+            except json.JSONDecodeError:
+                assets = [json.loads(line) for line in content.splitlines() if line.strip()]
+    except OSError as e:
         print(f"Error reading input file: {e}")
         return
 
